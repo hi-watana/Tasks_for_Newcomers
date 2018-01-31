@@ -8,7 +8,8 @@
 (define (main args)
   (use srfi-13)
   (cond ((not (= (length args) 3))
-         (display (string-append "Usage: " (car args) " <PDB file> <chain name>\n"))
+         (display
+           (string-append "Usage: " (car args) " <PDB file> <chain name>\n"))
          (exit 1)))
   (let* ((atom-list
            (let loop ((lst '()))
