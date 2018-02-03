@@ -11,26 +11,20 @@
          (display
            (string-append "Usage: " (car args) " <PDB file> <chain name>\n"))
          (exit 1)))
-  (let* ((atom-list
-           (let loop ((lst '()))
-             (with-input-from-file
-               (cadr args)
-               (lambda ()
-                 (let ((atom-line?
-                         (lambda (s)
-                           (and (or (equal? (substring s 0 4) "ATOM")
-                                    (equal? (substring s 0 6) "HETATM"))
-                                (equal? (substring s 13 15) "CA")
-                                (let ((altLoc (substring s 15 16)))
-                                  (or (equal? altLoc " ")
-                                      (equal? altLoc "A")))
-                                (equal? (substring s 21 22) (caddr args)))
-                           )))
-                   (port-for-each (lambda (s)
-                                    (cond ((atom-line? s)
-                                           (set! lst (cons s lst)))))
-                                  read-line))))
-             lst))
+  (let* ((atom-line?
+           (lambda (s)
+             (and (or (equal? (substring s 0 4) "ATOM")
+                      (equal? (substring s 0 6) "HETATM"))
+                  (equal? (substring s 13 15) "CA")
+                  (let ((altLoc (substring s 15 16)))
+                    (or (equal? altLoc " ")
+                        (equal? altLoc "A")))
+                  (equal? (substring s 21 22) (caddr args)))
+             ))
+         (atom-list (call-with-input-file
+                      (cadr args)
+                      (lambda (s)
+                        (filter atom-line? (port->string-list s)))))
          (xyz-list
            (map (lambda (s)
                   (list (my-string->number (substring s 30 37))
