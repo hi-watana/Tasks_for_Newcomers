@@ -14,7 +14,9 @@ def isAtomLine(line):
 def getRadiusOfGyration(filename, chain):
     with open(filename, "r") as f:
         atom_lines = filter(isAtomLine, f)
-        xyz_list = [[float(s[30:37].strip()), float(s[38:45].strip()), float(s[46:53].strip())] for s in atom_lines]
+        xyz_list = [[float(s[30:37].strip()),\
+                     float(s[38:45].strip()),\
+                     float(s[46:53].strip())] for s in atom_lines]
         gravity = np.array(xyz_list).T.mean(axis=1)
         return np.linalg.norm(xyz_list - gravity,axis=1).mean()
 
