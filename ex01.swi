@@ -13,12 +13,12 @@ main() :-
 count(A,T,G,C) :-
     File = 'NT_113952.1.fasta',
     see(File),
-    first_line(),!,
+    first_line,!,
     get(N),
     count_ATGC(N,0,0,0,0,A,T,G,C),
     seen.
 
-first_line() :-
+first_line :-
     repeat,
     get0(C),
     C == 10.
