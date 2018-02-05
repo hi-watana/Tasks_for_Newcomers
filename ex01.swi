@@ -1,0 +1,46 @@
+#!/usr/bin/env swipl
+/* vim:set filetype=prolog: */
+
+:- initialization(main, main).
+
+main() :-
+    count(A,T,G,C),
+    format("A: ~d", A),nl,
+    format("T: ~d", T),nl,
+    format("G: ~d", G),nl,
+    format("C: ~d", C),nl.
+
+count(A,T,G,C) :-
+    File = 'NT_113952.1.fasta',
+    see(File),
+    first_line,!,
+    get(N),
+    count_ATGC(N,0,0,0,0,A,T,G,C),
+    seen.
+
+first_line :-
+    repeat,
+    get0(C),
+    C == 10.
+
+count_ATGC(-1,A,T,G,C,A,T,G,C).
+
+count_ATGC(65,A0,T0,G0,C0,A,T,G,C) :-
+    A1 is A0 + 1,
+    get(N),
+    count_ATGC(N,A1,T0,G0,C0,A,T,G,C).
+
+count_ATGC(84,A0,T0,G0,C0,A,T,G,C) :-
+    T1 is T0 + 1,
+    get(N),
+    count_ATGC(N,A0,T1,G0,C0,A,T,G,C).
+
+count_ATGC(71,A0,T0,G0,C0,A,T,G,C) :-
+    G1 is G0 + 1,
+    get(N),
+    count_ATGC(N,A0,T0,G1,C0,A,T,G,C).
+
+count_ATGC(67,A0,T0,G0,C0,A,T,G,C) :-
+    C1 is C0 + 1,
+    get(N),
+    count_ATGC(N,A0,T0,G0,C1,A,T,G,C).
