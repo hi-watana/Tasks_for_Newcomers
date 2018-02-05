@@ -3,7 +3,7 @@
 
 :- initialization(main, main).
 
-main() :-
+main :-
     count(A,T,G,C),
     format("A: ~d", A),nl,
     format("T: ~d", T),nl,
