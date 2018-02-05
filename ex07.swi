@@ -18,12 +18,12 @@ args_check(_) :-
     halt(1).
 
 read_file :-
-    get0(C),
-    read_file(C).
+    seeing(Stream),
+    read_line_to_string(Stream,S),
+    read_file(Stream,S).
 
-read_file(-1).
-read_file(C0) :-
-    put(C0),
-    get0(C),
-    read_file(C).
-
+read_file(Stream,end_of_file).
+read_file(Stream,S0) :-
+    write(S0),nl,
+    read_line_to_string(Stream,S),
+    read_file(Stream,S).
