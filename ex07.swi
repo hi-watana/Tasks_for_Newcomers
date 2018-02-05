@@ -2,7 +2,7 @@
 /* vim:set filetype=prolog: */
 
 :- initialization(main,main).
-:- use_module(library(clpfd)).
+%:- use_module(library(clpfd)).
 
 main(Args) :-
     length(Args,N),
@@ -12,8 +12,7 @@ main(Args) :-
     split_string(S,"\n","",Ls),
     include(ca_line(Chain),Ls,Lines),
     maplist(line_to_point,Lines,Points),
-    transpose(Points,PointsT),
-    maplist(means,PointsT,G),
+    gravity(Points,G),
     maplist(maplist(minus,G),Points,RelativePoints),
     maplist(norm,RelativePoints,Norms),
     means(Norms,R),
@@ -65,3 +64,31 @@ norm([X|YZ],Norm) :-
     Zphi = [Z|_],
     Norm2 is X * X + Y * Y + Z * Z,
     Norm is sqrt(Norm2).
+
+/*
+gravity(Points,G) :-
+    transpose(Points,PointsT),
+    maplist(means,PointsT,G).
+*/
+
+gravity(Points,G) :-
+    length(Points,N),
+    gravity(Points,[0,0,0],N,G).
+
+gravity([],Sum,N,G) :-
+    Sum = [X|YZ],
+    YZ = [Y|Zphi],
+    Zphi = [Z|_],
+    Xg is X / N,
+    Yg is Y / N,
+    Zg is Z / N,
+    Zgphi = [Zg|_],
+    YZg = [Yg|Zgphi],
+    G = [Xg|YZg].
+
+gravity([P|Rem],Sum,N,G) :-
+    maplist(my_plus,P,Sum,Sum1),
+    gravity(Rem,Sum1,N,G).
+
+my_plus(X,Y,Z) :-
+    Z is X + Y.
