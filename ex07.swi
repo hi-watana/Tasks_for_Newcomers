@@ -2,14 +2,22 @@
 /* vim:set filetype=prolog: */
 
 :- initialization(main,main).
+:- use_module(library(clpfd)).
 
 main(Args) :-
     length(Args,N),
     args_check(N),
-    Args = [File,_|_],
-    see(File),
-    read_file,
-    seen.
+    Args = [File,Chain|_],
+    read_file_to_string(File,S,[]),
+    split_string(S,"\n","",Ls),
+    include(ca_line(Chain),Ls,Lines),
+    maplist(line_to_point,Lines,Points),
+    transpose(Points,PointsT),
+    maplist(means,PointsT,G),
+    maplist(maplist(minus,G),Points,RelativePoints),
+    maplist(norm,RelativePoints,Norms),
+    means(Norms,R),
+    write(R),nl.
 
 args_check(2).
 args_check(_) :-
@@ -17,13 +25,43 @@ args_check(_) :-
     nl,
     halt(1).
 
-read_file :-
-    seeing(Stream),
-    read_line_to_string(Stream,S),
-    read_file(Stream,S).
+ca_line(C,S) :-
+    atom_line(S),
+    sub_string(S,13,2,_,"CA"),
+    sub_string(S,15,1,_,C15),
+    a_or_blank(C15),
+    sub_string(S,21,1,_,C).
 
-read_file(Stream,end_of_file).
-read_file(Stream,S0) :-
-    write(S0),nl,
-    read_line_to_string(Stream,S),
-    read_file(Stream,S).
+a_or_blank(" ").
+a_or_blank("A").
+
+atom_line(S) :-
+    sub_string(S,0,4,_,"ATOM");
+    sub_string(S,0,6,_,"HETATM").
+
+line_to_point(Line,Point) :-
+    maplist(seven_chars(Line),[30,38,46],Strings),
+    maplist(trim,Strings,Trimed),
+    maplist(atom_string,Atoms,Trimed),
+    maplist(atom_number,Atoms,Point).
+
+seven_chars(String,Begin,Seven) :-
+    sub_string(String,Begin,7,_,Seven).
+
+trim(B,A) :-
+    split_string(B,"","\s\t\n",Ls),
+    Ls = [A|_].
+
+means(Ls,Ave) :-
+    sum_list(Ls,Sum),
+    length(Ls,Length),
+    Ave is Sum / Length.
+
+minus(X,Y,Z) :-
+    Z is X - Y.
+
+norm([X|YZ],Norm) :-
+    YZ = [Y|Zphi],
+    Zphi = [Z|_],
+    Norm2 is X * X + Y * Y + Z * Z,
+    Norm is sqrt(Norm2).
