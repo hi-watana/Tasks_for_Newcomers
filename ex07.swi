@@ -1,0 +1,29 @@
+#!/usr/bin/env swipl
+/* vim:set filetype=prolog: */
+
+:- initialization(main,main).
+
+main(Args) :-
+    length(Args,N),
+    args_check(N),
+    Args = [File,_|_],
+    see(File),
+    read_file,
+    seen.
+
+args_check(2).
+args_check(_) :-
+    write("Usage: ./ex07.swi <PDB file> <chain name>"),
+    nl,
+    halt(1).
+
+read_file :-
+    get0(C),
+    read_file(C).
+
+read_file(-1).
+read_file(C0) :-
+    put(C0),
+    get0(C),
+    read_file(C).
+
