@@ -59,9 +59,8 @@ means(Ls,Ave) :-
 minus(X,Y,Z) :-
     Z is X - Y.
 
-norm([X|YZ],Norm) :-
-    YZ = [Y|Zphi],
-    Zphi = [Z|_],
+norm(Point,Norm) :-
+    Point = [X,Y,Z],
     Norm2 is X * X + Y * Y + Z * Z,
     Norm is sqrt(Norm2).
 
@@ -76,15 +75,11 @@ gravity(Points,G) :-
     gravity(Points,[0,0,0],N,G).
 
 gravity([],Sum,N,G) :-
-    Sum = [X|YZ],
-    YZ = [Y|Zphi],
-    Zphi = [Z|_],
+    Sum = [X,Y,Z],
     Xg is X / N,
     Yg is Y / N,
     Zg is Z / N,
-    Zgphi = [Zg|_],
-    YZg = [Yg|Zgphi],
-    G = [Xg|YZg].
+    G = [Xg,Yg,Zg].
 
 gravity([P|Rem],Sum,N,G) :-
     maplist(my_plus,P,Sum,Sum1),

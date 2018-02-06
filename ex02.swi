@@ -1,0 +1,31 @@
+#!/usr/bin/env swipl
+/* vim:set filetype=prolog: */
+
+/*
+:- initialization(main,main).
+
+main :-
+    read_file_to_string('NT_113952.1.fasta',S,[]),
+    split_string(S,"\n","",[_|Rem]),
+    maplist(atom_string,Al,Rem),
+    atomic_list_concat(Al,"",A),
+    atom_codes(A,C),
+    complement(C,R),
+    string_codes(Result,R),
+    write(Result),nl.
+*/
+
+complement(Array,Compliment) :-
+    %maplist(pair,Array,C),
+    %reverse(C,Compliment).
+    complement(Array,[],Compliment).
+
+complement([],Compliment,Compliment).
+complement([X|Rem],Ls,Compliment) :-
+    pair(X,Y),
+    complement(Rem,[Y|Ls],Compliment).
+
+pair(65,84). % A,T
+pair(84,65). % T,A
+pair(71,67). % G,C
+pair(67,71). % C,G

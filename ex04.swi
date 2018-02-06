@@ -1,0 +1,37 @@
+#!/usr/bin/env swipl
+/* vim:set filetype=prolog: */
+
+:- initialization(main,main).
+
+main(Args) :-
+    length(Args,N),
+    check_arglen(N),
+
+    ['ex02.swi'],
+    Args = [Sub|_],
+    read_file_to_string("NT_113952.1.fasta",S,[]),
+    split_string(S,"\n","",[_|Ls]),
+    maplist(atom_string,Atoms,Ls),
+    atomic_list_concat(Atoms,'',A),
+    atom_string(A,Seq),
+
+    findall(I1,sub_string(Seq,I1,_,_,Sub),MatchList),
+    write("chain:"),
+    write_data(MatchList),nl,
+    string_codes(Seq,SeqCode),
+    complement(SeqCode,CompCode),
+    string_codes(Comp,CompCode),
+    findall(I2,sub_string(Comp,I2,_,_,Sub),CompMatchList),
+    write("reverse complement:"),
+    write_data(CompMatchList),nl.
+
+check_arglen(1).
+check_arglen(_) :-
+    write("Usage: ./ex04.swi <base array>"),
+    nl,
+    halt(1).
+
+write_data([]).
+write_data([X|Ls]) :-
+    nl,write(X),
+    write_data(Ls).
