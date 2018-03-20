@@ -1,11 +1,19 @@
-import numpy as np
-#import matplotlib.pyplot as plt
-#%matplotlib inline
-from sklearn import svm
-from sklearn import datasets
-from sklearn import cross_validation
-ionospheres = datasets.load_digits()
-X_digits = ionospheres.data
-y_digits = ionospheres.target
-print(X_digits)
-print(Y_digits)
+from sklearn import svm, datasets, model_selection, metrics
+
+if __name__ == "__main__":
+    X, y = datasets.load_svmlight_file("ionosphere.scale")
+    clf = svm.SVC(random_state=0)
+    print("[precision, recall, MCC, AUROC, F-score]")
+    for i, j in model_selection.StratifiedKFold(n_splits=10).split(X, y):
+        clf.fit(X[i], y[i])
+        predicted = clf.predict(X[j])
+        print(
+                [f(y[j], predicted) for f in [
+                    metrics.precision_score,
+                    metrics.recall_score,
+                    metrics.matthews_corrcoef,
+                    metrics.roc_auc_score,
+                    metrics.f1_score,
+                    ]
+                    ]
+                )
